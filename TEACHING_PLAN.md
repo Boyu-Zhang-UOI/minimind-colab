@@ -350,4 +350,191 @@ minimind-colab/
 
 ---
 
+## 6-Session Classroom Implementation Plan
+
+> The 7 modules above map to **6 one-hour live-coding sessions**. Session 1 combines Modules 1+2 (Tokenizer + Architecture), while Sessions 2–6 map directly to Modules 3–7.
+
+### Pre-Course Setup (Assign Before Session 1)
+
+- **Create a Google Colab account** (free tier sufficient for Sessions 1–4; Pro recommended for 5–6)
+- **Star/fork the `minimind-colab` repository** on GitHub
+- **Skim `README_en.md`** for project scope: a 64M-parameter LLM from scratch for ~$3
+- **Review the code-structure diagram** above to understand the repository layout
+- **Read background material**: What is an LLM? What is the Transformer? Basic PyTorch (`nn.Module`, tensors, training loops)
+
+### Session-to-Module Mapping
+
+| Session | Topic | Modules | Key Files | Homework |
+|---------|-------|---------|-----------|----------|
+| 1 | Tokenizer + Architecture Foundations | 1 + 2 | `train_tokenizer.py`, `model_minimind.py` | Tokenizer experiments; read FFN/MoE/full model |
+| 2 | Complete Model + Pretraining | 3 | `model_minimind.py`, `train_pretrain.py`, `trainer_utils.py` | Continue pretraining; read SFT/LoRA code |
+| 3 | SFT + LoRA | 4 | `lm_dataset.py` (SFTDataset), `train_full_sft.py`, `model_lora.py`, `train_lora.py` | Complete SFT; read DPO/GRPO code |
+| 4 | Alignment (DPO + GRPO) | 5 | `lm_dataset.py` (DPODataset), `train_dpo.py`, `rollout_engine.py`, `train_grpo.py` | Complete DPO; read Agent RL/distillation |
+| 5 | Agent RL + Distillation | 6 | `train_agent.py`, `lm_dataset.py` (AgentRLDataset), `train_distillation.py` | Agent RL demo; read inference/deployment scripts |
+| 6 | Inference + Deployment + Wrap-Up | 7 | `eval_llm.py`, `serve_openai_api.py`, `web_demo.py`, `convert_model.py` | Final project (optional) |
+
+---
+
+### Session 1: Tokenization & Model Architecture Foundations (1 hour)
+
+**Pre-Session Reading (~30 min):** Byte-Pair Encoding overview; What are special tokens?
+
+**Live Coding Outline (60 min):**
+
+**Part A — BPE Tokenizer (25 min)** — Walk through `trainer/train_tokenizer.py`:
+1. **(5 min)** Open `01_Tokenizer.ipynb`. Goal: build a 6,400-token vocabulary from raw text using BPE.
+2. **(8 min)** Live-code the tokenizer pipeline: load JSONL text → configure `ByteLevelBPETokenizer` → define 36 special tokens → train and save.
+3. **(7 min)** Inspect interactively: tokenize sample sentences, check compression ratio, explore Chinese vs English tokenization.
+4. **(5 min)** Demonstrate chat templates: `tokenizer.apply_chat_template()` on multi-turn conversations.
+
+**Part B — Model Architecture (30 min)** — Walk through `model/model_minimind.py`:
+5. **(5 min)** Open `02_Architecture.ipynb`. Introduce `MiniMindConfig` and calculate ~64M parameters.
+6. **(5 min)** Implement `RMSNorm`: `x / sqrt(mean(x²) + eps) * weight`. Compare to LayerNorm.
+7. **(10 min)** Implement `precompute_freqs_cis` for RoPE with YaRN scaling.
+8. **(10 min)** Implement `Attention` class with GQA (8 query heads, 4 KV heads), RoPE, causal masking.
+
+**Wrap-up (5 min):** Recap and preview Session 2.
+
+**Homework (~45 min):**
+1. Tokenize 10 sentences; observe sub-word splits with rare words and code.
+2. Read `model_minimind.py` lines 134–279 (FFN, MoE, full model).
+3. Answer: Why does GQA use fewer KV heads? What is the memory saving with KV-cache?
+
+---
+
+### Session 2: Complete Model & Pretraining (1 hour)
+
+**Pre-Session Reading (~30 min):** Review FFN/MoE/model classes; read `PretrainDataset` and `trainer_utils.py`.
+
+**Live Coding Outline (60 min):**
+
+**Part A — Completing the Model (20 min):**
+1. **(5 min)** Implement `FeedForward`: SiLU-gated with `down_proj(SiLU(gate_proj(x)) * up_proj(x))`.
+2. **(5 min)** Implement `MOEFeedForward`: router → top-k expert selection → auxiliary loss.
+3. **(5 min)** Assemble `MiniMindBlock`: pre-norm residuals stacking 8 blocks.
+4. **(5 min)** Assemble `MiniMindForCausalLM`: embedding + blocks + LM head + weight tying.
+
+**Part B — Pretraining (35 min):**
+5. **(5 min)** Walk through `PretrainDataset`: JSONL → `[BOS] + tokens + [EOS] + PAD`, labels masked at PAD.
+6. **(5 min)** Walk through `trainer_utils.py`: `init_model()`, `get_lr()`, `lm_checkpoint()`.
+7. **(20 min)** Live-code pretraining loop from `train_pretrain.py`: DataLoader → AdamW → AMP → gradient accumulation → cosine LR → checkpointing. Run ~50–100 steps.
+8. **(5 min)** Test generation from partially trained model.
+
+**Homework (~60 min):**
+1. Continue pretraining for the full epoch; save checkpoint to Drive.
+2. Read `SFTDataset` and `model_lora.py`.
+3. Answer: Why are user/system tokens masked with -100 in SFT labels?
+
+---
+
+### Session 3: Supervised Fine-Tuning & LoRA (1 hour)
+
+**Pre-Session Reading (~30 min):** Review SFTDataset, model_lora.py, train_full_sft.py, train_lora.py.
+
+**Live Coding Outline (60 min):**
+
+**Part A — SFT Data & Label Masking (15 min):**
+1. **(5 min)** Walk through `SFTDataset`: conversations → chat template → tokenize.
+2. **(10 min)** Demonstrate label masking: tokenize assistant turns, set all other labels to -100.
+
+**Part B — Full SFT Training (15 min):**
+3. **(15 min)** Live-code from `train_full_sft.py`: load pretrained checkpoint → SFTDataset → lower LR (1e-5) → longer sequences (768) → label masking → run ~50 steps → test instruction following.
+
+**Part C — LoRA (25 min):**
+4. **(10 min)** Implement LoRA from `model_lora.py`: `W' = W + A·B`, A~N(0,0.02), B=0, rank=16. Count ~5% trainable params.
+5. **(10 min)** Live-code LoRA training from `train_lora.py`: freeze base → higher LR (1e-4) → save LoRA-only checkpoint (~5MB).
+6. **(5 min)** Merge and compare: `merge_lora()` → compare base vs SFT vs LoRA.
+
+**Homework (~60 min):**
+1. Complete full SFT training and save checkpoint.
+2. Try LoRA on a domain-specific dataset.
+3. Read `train_dpo.py` and `DPODataset`.
+4. Answer: In DPO, why do we need a frozen reference model?
+
+---
+
+### Session 4: Alignment — DPO & GRPO (1 hour)
+
+**Pre-Session Reading (~30 min):** Review train_dpo.py, DPODataset, train_grpo.py, rollout_engine.py.
+
+**Live Coding Outline (60 min):**
+
+**Part A — DPO (30 min):**
+1. **(5 min)** Explain alignment: SFT can follow instructions but may produce undesirable outputs.
+2. **(5 min)** Walk through `DPODataset`: chosen/rejected pairs → tokenize → loss masks.
+3. **(15 min)** Live-code DPO from `train_dpo.py`: frozen reference model + trainable policy → DPO loss: `-log_sigmoid(β · (π_logratios - ref_logratios))` → run ~50 steps.
+4. **(5 min)** Test: compare SFT vs DPO outputs.
+
+**Part B — GRPO (25 min):**
+5. **(5 min)** Introduce GRPO: generate N=4 responses → rank by reward → normalize advantages.
+6. **(5 min)** Walk through `rollout_engine.py`: generate completions + per-token log-probs.
+7. **(10 min)** Walk through `train_grpo.py`: rollout → reward (length + thinking + repetition) → advantage normalization → clipped policy gradient + KL penalty.
+8. **(5 min)** Compare: DPO (offline, simple) vs GRPO (online, custom rewards) vs PPO (learned critic).
+
+**Homework (~60 min):**
+1. Complete DPO training.
+2. Experiment with different beta values (0.05, 0.1, 0.5).
+3. Read `train_ppo.py` and `train_agent.py`.
+4. Answer: What happens in GRPO when all 4 responses get the same reward?
+
+---
+
+### Session 5: Agent RL & Knowledge Distillation (1 hour)
+
+**Pre-Session Reading (~30 min):** Review train_agent.py, train_distillation.py; read about LLM function calling.
+
+**Live Coding Outline (60 min):**
+
+**Part A — Agent RL for Tool Use (35 min):**
+1. **(5 min)** Introduce tool-use: 6 mock tools (calculate_math, get_weather, get_exchange_rate, etc.).
+2. **(5 min)** Walk through `AgentRLDataset`: multi-turn conversations with tools and ground truth.
+3. **(15 min)** Walk through `train_agent.py`: tool definitions → mock execution → multi-turn rollout (generate → `<tool_call>` → execute → `<tool_response>` → generate again) → reward signals → policy gradient.
+4. **(10 min)** Interactive demo: test tool calling with math and weather prompts.
+
+**Part B — Knowledge Distillation (20 min):**
+5. **(5 min)** Explain: teacher (larger) → student (smaller) via soft probability distributions.
+6. **(10 min)** Live-code from `train_distillation.py`: temperature scaling (T=4.0) → `KL(student || teacher)` → blended loss: `α·CE + (1-α)·T²·KL`.
+7. **(5 min)** Discuss: when to use distillation vs direct training.
+
+**Homework (~60 min):**
+1. Run Agent RL for a few steps; test tool calling.
+2. Read `eval_llm.py`, `serve_openai_api.py`, `web_demo.py`, `convert_model.py`.
+
+---
+
+### Session 6: Inference, Deployment & Course Wrap-Up (1 hour)
+
+**Pre-Session Reading (~30 min):** Review inference/deployment scripts; understand REST APIs and SSE streaming.
+
+**Live Coding Outline (60 min):**
+
+**Part A — Autoregressive Generation (15 min):**
+1. **(10 min)** Walk through `model.generate()`: temperature → top-k → top-p → repetition penalty → KV-Cache → stopping condition.
+2. **(5 min)** Demo sampling parameter effects.
+
+**Part B — Interactive CLI Chat (10 min):**
+3. **(10 min)** Walk through and run `eval_llm.py`: multi-turn history → streaming → speed measurement → LoRA loading.
+
+**Part C — OpenAI-Compatible API Server (15 min):**
+4. **(10 min)** Walk through `serve_openai_api.py`: FastAPI → `/v1/chat/completions` → streaming SSE → `<think>`/`<tool_call>` parsing.
+5. **(5 min)** Deploy and test with ngrok + OpenAI client.
+
+**Part D — Web UI & Model Conversion (10 min):**
+6. **(5 min)** Brief walkthrough of `web_demo.py`: Streamlit chat with thinking/tool display.
+7. **(5 min)** Model conversion from `convert_model.py`: PyTorch → HuggingFace format.
+
+**Part E — Course Wrap-Up (10 min):**
+8. **(10 min)** Review the complete pipeline across all 6 sessions. Discuss next steps.
+
+---
+
+### Final Take-Home Project (Optional, ~2–4 hours)
+
+1. **End-to-end pipeline**: Run the complete pipeline from tokenizer through API deployment in a fresh Colab.
+2. **Custom domain adaptation**: LoRA fine-tune on a domain-specific dataset (code, medical, legal).
+3. **Extend the tool set**: Add a new tool to `train_agent.py` and train via Agent RL.
+4. **Write a blog post**: Explain one training stage with diagrams using MiniMind as the example.
+
+---
+
 *Teaching plan created for the MiniMind-Colab project. All materials are designed to run on Google Colab with a free-tier T4 GPU.*
