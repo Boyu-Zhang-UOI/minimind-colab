@@ -352,7 +352,7 @@ minimind-colab/
 
 ## 6-Session Classroom Implementation Plan
 
-> The 7 modules above map to **6 one-hour live-coding sessions**. Sessions 1 combines Modules 1+2 (Tokenizer + Architecture), while Sessions 2–6 map directly to Modules 3–7.
+> The 7 modules above map to **6 one-hour live-coding sessions**. Session 1 combines Modules 1+2 (Tokenizer + Architecture), while Sessions 2–6 map directly to Modules 3–7.
 
 ### Pre-Course Setup (Assign Before Session 1)
 
