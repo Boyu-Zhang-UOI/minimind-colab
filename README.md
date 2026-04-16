@@ -27,25 +27,20 @@
 
 ---
 
-## 📓 Google Colab Notebooks (NLP Classroom Edition)
+## 📓 Step-by-Step Teaching Notebooks
 
-This fork includes ready-to-run Colab notebooks for training MiniMind from scratch — covering the full LLM pipeline from tokenizer to reinforcement learning, all on Colab's free T4 GPU tier.
+This fork includes step-by-step Colab notebooks for learning MiniMind from scratch — covering the full LLM pipeline from tokenizer to evaluation, all on Colab's free T4 GPU tier.
 
-| # | Notebook | Topic | Open in Colab |
-|---|----------|-------|---------------|
-| 1 | Setup & Inference | Environment setup, download pre-trained model, first chat | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Boyu-Zhang-UOI/minimind-colab/blob/master/notebooks/01_setup_and_inference.ipynb) |
-| 2 | Tokenizer & Data | BPE tokenizer, dataset exploration, token statistics | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Boyu-Zhang-UOI/minimind-colab/blob/master/notebooks/02_tokenizer_and_data.ipynb) |
-| 3 | Model Architecture | RMSNorm, SwiGLU, RoPE, GQA, MoE, parameter counting | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Boyu-Zhang-UOI/minimind-colab/blob/master/notebooks/03_model_architecture.ipynb) |
-| 4 | Pretraining | Next-token prediction, live loss plotting (~1.2h on T4) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Boyu-Zhang-UOI/minimind-colab/blob/master/notebooks/04_pretraining.ipynb) |
-| 5 | Supervised Fine-Tuning | SFT, before/after comparison, instruction following | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Boyu-Zhang-UOI/minimind-colab/blob/master/notebooks/05_supervised_finetuning.ipynb) |
-| 6 | LoRA Fine-Tuning | LoRA theory, custom dataset creation, adapter merging | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Boyu-Zhang-UOI/minimind-colab/blob/master/notebooks/06_lora_finetuning.ipynb) |
-| 7 | Knowledge Distillation | Teacher-student distillation, temperature scaling, KL loss | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Boyu-Zhang-UOI/minimind-colab/blob/master/notebooks/07_knowledge_distillation.ipynb) |
-| 8 | DPO Alignment | RLHF via DPO, preference pairs, policy vs reference model | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Boyu-Zhang-UOI/minimind-colab/blob/master/notebooks/08_dpo_alignment.ipynb) |
-| 9 | PPO & GRPO | RLAIF, group-relative advantage, reward curves | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Boyu-Zhang-UOI/minimind-colab/blob/master/notebooks/09_rl_ppo_grpo.ipynb) |
-| 10 | Tool Calling & Agent RL | `<tool_call>` format, multi-turn tool use, agentic RL | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Boyu-Zhang-UOI/minimind-colab/blob/master/notebooks/10_tool_calling_agent.ipynb) |
-| 11 | Evaluation | Model conversion, perplexity, benchmarks, API serving | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Boyu-Zhang-UOI/minimind-colab/blob/master/notebooks/11_evaluation.ipynb) |
+| # | Notebook | Topic |
+|---|----------|-------|
+| 1 | Tokenizer | BPE tokenizer training, special tokens, chat templates |
+| 2 | Model Architecture | RMSNorm, RoPE, GQA, FeedForward, MoE, Transformer blocks |
+| 3 | Data Pipeline | Pretrain & SFT datasets, label masking, DataLoader |
+| 4 | Pretraining | Causal LM, next-token prediction, training loop, AMP |
+| 5 | SFT & LoRA | Supervised fine-tuning, LoRA adapters, merging |
+| 6 | Evaluation & Inference | Autoregressive generation, sampling, benchmarks |
 
-> **Colab Adaptations Applied:** No argparse (uses `argparse.Namespace`), no DDP, paths fixed to `/content/minimind-colab/`, Google Drive mount cells, `!nvidia-smi` GPU checks, ModelScope dataset download, `matplotlib` inline loss plots, `tqdm.notebook` progress bars, and `torch.cuda.empty_cache()` memory cleanup cells.
+Each notebook has a regular version and a LiveCoding version (with fill-in-the-blank exercises).
 
 ---
 
