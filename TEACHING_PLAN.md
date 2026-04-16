@@ -118,13 +118,12 @@ graph TB
 
 | Module | Topic | Key Concepts | Notebook | Estimated Time |
 |--------|-------|-------------|----------|---------------|
-| 1 | Introduction & Tokenization | BPE, vocab, special tokens | `01_Tokenizer.ipynb` | 30 min |
-| 2 | Model Architecture | Transformer, RoPE, GQA, MoE, RMSNorm | `02_Architecture.ipynb` | 45 min |
-| 3 | Pretraining | Causal LM, next-token prediction, AMP | `03_Pretraining.ipynb` | 60 min |
-| 4 | Supervised Fine-Tuning | Full SFT, LoRA, chat templates | `04_SFT_and_LoRA.ipynb` | 60 min |
-| 5 | Alignment | DPO, PPO, GRPO | `05_Alignment.ipynb` | 60 min |
-| 6 | Advanced Topics | Agent RL, distillation, evaluation | `06_Advanced.ipynb` | 45 min |
-| 7 | Inference & Deployment | Chat, API serving, model conversion | `07_Inference_and_Deployment.ipynb` | 30 min |
+| 1 | Introduction & Tokenization | BPE, vocab, special tokens | `Notebook_1_Tokenizer.ipynb` | 30 min |
+| 2 | Model Architecture | Transformer, RoPE, GQA, MoE, RMSNorm | `Notebook_2_Model_Architecture.ipynb` | 45 min |
+| 3 | Data Pipeline | Pretrain & SFT datasets, label masking | `Notebook_3_Data_Pipeline.ipynb` | 45 min |
+| 4 | Pretraining | Causal LM, next-token prediction, AMP | `Notebook_4_Pretraining.ipynb` | 60 min |
+| 5 | SFT & LoRA | Full SFT, LoRA, adapter merging | `Notebook_5_SFT_and_LoRA.ipynb` | 60 min |
+| 6 | Evaluation & Inference | Autoregressive generation, benchmarks | `Notebook_6_Evaluation_and_Inference.ipynb` | 45 min |
 
 ---
 
@@ -324,13 +323,18 @@ graph TB
 minimind-colab/
 ├── TEACHING_PLAN.md              ← This file
 ├── notebooks/
-│   ├── 01_Tokenizer.ipynb        ← Module 1: Tokenization
-│   ├── 02_Architecture.ipynb     ← Module 2: Model Architecture
-│   ├── 03_Pretraining.ipynb      ← Module 3: Pretraining
-│   ├── 04_SFT_and_LoRA.ipynb     ← Module 4: SFT + LoRA
-│   ├── 05_Alignment.ipynb        ← Module 5: DPO + RLHF
-│   ├── 06_Advanced.ipynb         ← Module 6: Agent RL + Distillation
-│   └── 07_Inference_and_Deployment.ipynb ← Module 7: Deployment
+│   ├── Notebook_1_Tokenizer.ipynb              ← Module 1: Tokenization
+│   ├── Notebook_1_Tokenizer_LiveCoding.ipynb
+│   ├── Notebook_2_Model_Architecture.ipynb     ← Module 2: Model Architecture
+│   ├── Notebook_2_Model_Architecture_LiveCoding.ipynb
+│   ├── Notebook_3_Data_Pipeline.ipynb          ← Module 3: Data Pipeline
+│   ├── Notebook_3_Data_Pipeline_LiveCoding.ipynb
+│   ├── Notebook_4_Pretraining.ipynb            ← Module 4: Pretraining
+│   ├── Notebook_4_Pretraining_LiveCoding.ipynb
+│   ├── Notebook_5_SFT_and_LoRA.ipynb           ← Module 5: SFT & LoRA
+│   ├── Notebook_5_SFT_and_LoRA_LiveCoding.ipynb
+│   ├── Notebook_6_Evaluation_and_Inference.ipynb         ← Module 6: Evaluation & Inference
+│   └── Notebook_6_Evaluation_and_Inference_LiveCoding.ipynb
 ├── model/                        ← Model architecture
 ├── dataset/                      ← Data loading
 ├── trainer/                      ← Training scripts
@@ -382,13 +386,13 @@ minimind-colab/
 **Live Coding Outline (60 min):**
 
 **Part A — BPE Tokenizer (25 min)** — Walk through `trainer/train_tokenizer.py`:
-1. **(5 min)** Open `01_Tokenizer.ipynb`. Goal: build a 6,400-token vocabulary from raw text using BPE.
+1. **(5 min)** Open `Notebook_1_Tokenizer.ipynb`. Goal: build a 6,400-token vocabulary from raw text using BPE.
 2. **(8 min)** Live-code the tokenizer pipeline: load JSONL text → configure `ByteLevelBPETokenizer` → define 36 special tokens → train and save.
 3. **(7 min)** Inspect interactively: tokenize sample sentences, check compression ratio, explore Chinese vs English tokenization.
 4. **(5 min)** Demonstrate chat templates: `tokenizer.apply_chat_template()` on multi-turn conversations.
 
 **Part B — Model Architecture (30 min)** — Walk through `model/model_minimind.py`:
-5. **(5 min)** Open `02_Architecture.ipynb`. Introduce `MiniMindConfig` and calculate ~64M parameters.
+5. **(5 min)** Open `Notebook_2_Model_Architecture.ipynb`. Introduce `MiniMindConfig` and calculate ~64M parameters.
 6. **(5 min)** Implement `RMSNorm`: `x / sqrt(mean(x²) + eps) * weight`. Compare to LayerNorm.
 7. **(10 min)** Implement `precompute_freqs_cis` for RoPE with YaRN scaling.
 8. **(10 min)** Implement `Attention` class with GQA (8 query heads, 4 KV heads), RoPE, causal masking.
