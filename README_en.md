@@ -39,6 +39,12 @@
 * This is not only a full-stage open-source reproduction project for large language models, but also a tutorial oriented towards LLM introduction and practice.
 * We hope this project can provide a reproducible, understandable, and extensible starting point for more people, to share the joy of creation together and promote the progress of the broader AI community.
 
+## 🗺️ Architecture Mind Map
+
+A visual mind map of the MiniMind model structure and code implementation is available as [`minimind_architecture.mm`](./minimind_architecture.mm). This FreeMind-format file covers the full model architecture, configuration, training pipeline, datasets, inference, and key techniques.
+
+Open it with any FreeMind-compatible tool such as [Freeplane](https://docs.freeplane.org/) (free), [FreeMind](http://freemind.sourceforge.net/), [XMind](https://xmind.app/), or [MindMeister](https://www.mindmeister.com/).
+
 > Note: This project is open-sourced under the Apache 2.0 license and is completely free; "2 hours" is estimated based on NVIDIA 3090 hardware (single GPU), and "3 CNY" refers to GPU server rental cost. See below for detailed specifications.
 
 ---
