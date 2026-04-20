@@ -42,6 +42,12 @@ This fork includes step-by-step Colab notebooks for learning MiniMind from scrat
 
 Each notebook has a regular version and a LiveCoding version (with fill-in-the-blank exercises).
 
+## 🗺️ Architecture Mind Map
+
+A visual mind map of the MiniMind model structure and code implementation is available as [`minimind_architecture.mm`](./minimind_architecture.mm). This FreeMind-format file covers the full model architecture, configuration, training pipeline, datasets, inference, and key techniques.
+
+Open it with any FreeMind-compatible tool such as [Freeplane](https://docs.freeplane.org/) (free), [FreeMind](http://freemind.sourceforge.net/), [XMind](https://xmind.app/), or [MindMeister](https://www.mindmeister.com/).
+
 ---
 
 <div align="center">
